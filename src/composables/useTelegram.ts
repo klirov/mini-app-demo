@@ -1,4 +1,3 @@
-// src/composables/useTelegram.ts
 import { ref } from "vue";
 
 export function useTelegram() {
@@ -6,6 +5,7 @@ export function useTelegram() {
 
     const user = ref(
         tg?.initDataUnsafe?.user || {
+            id: 12345678,
             first_name: "Тестовый",
             last_name: "Пользователь",
             username: "test_user",
@@ -33,12 +33,30 @@ export function useTelegram() {
         }
     };
 
-    const sendOrderToBot = (data: any) => {
+    const sendOrderToBot = async (data: any) => {
         if (tg) {
             triggerHaptic("success");
-            tg.sendData(JSON.stringify(data));
+            try {
+                const response = await fetch(
+                    "https://telegram-bot-seven-ecru.vercel.app/api/order",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data),
+                    },
+                );
+
+                if (response.ok) {
+                    tg.close();
+                } else {
+                    alert("Ошибка сервера при создании заказа");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Сбой сети. Не удалось связаться с сервером.");
+            }
         } else {
-            alert("Внутри ТГ заказ улетел бы в бот: " + JSON.stringify(data));
+            alert("Вне ТГ (Имитация API-запроса): " + JSON.stringify(data));
         }
     };
 

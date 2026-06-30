@@ -2,7 +2,6 @@
     <div
         class="min-h-screen bg-[#05070a] text-slate-100 p-4 pb-28 selection:bg-indigo-500/30"
     >
-        <!-- Юзер-бар в стиле Shadcn Card -->
         <header
             class="flex items-center justify-between border border-slate-800 bg-[#090d16]/60 backdrop-blur-md p-4 rounded-xl mb-6"
         >
@@ -28,7 +27,6 @@
             </div>
         </header>
 
-        <!-- Заголовок каталога -->
         <div class="mb-5">
             <h2 class="text-xl font-bold tracking-tight text-white">Кофейня</h2>
             <p class="text-xs text-slate-400 mt-0.5">
@@ -36,7 +34,6 @@
             </p>
         </div>
 
-        <!-- Сетка товаров -->
         <main class="flex flex-col gap-3">
             <div
                 v-for="product in products"
@@ -63,7 +60,6 @@
                         {{ product.desc }}
                     </p>
 
-                    <!-- Кнопки управления корзиной -->
                     <div class="flex justify-end">
                         <button
                             v-if="!cart[product.id]"
@@ -98,7 +94,6 @@
             </div>
         </main>
 
-        <!-- Нижняя плашка корзины (Shadcn Sticky Sheet) -->
         <transition name="slide-up">
             <div
                 v-if="totalItems > 0"
@@ -142,18 +137,17 @@ onMounted(() => {
     initApp();
 });
 
-// Меню нашей демо-кофейни
 const products = ref([
     {
         id: 1,
-        name: "Cyber Espresso",
+        name: "Espresso",
         price: 180,
         desc: "Заряд энергии для жесткого код-ревью. Плотный, с кислинкой.",
         icon: "☕",
     },
     {
         id: 2,
-        name: "Koltsovo Latte",
+        name: "Latte",
         price: 240,
         desc: "Мягкий молочный вкус с секретным сиропом из сибирских ягод.",
         icon: "🥤",
@@ -167,14 +161,13 @@ const products = ref([
     },
     {
         id: 4,
-        name: "Vue Croissant",
+        name: "Croissant",
         price: 190,
-        desc: "Слоеный, воздушный, максимально реактивный.",
+        desc: "Слоеный, воздушный",
         icon: "🥐",
     },
 ]);
 
-// Стейт корзины: { id_товара: количество }
 const cart = ref<Record<number, number>>({});
 
 const addToCart = (id: number) => {
@@ -191,7 +184,6 @@ const removeFromCart = (id: number) => {
     }
 };
 
-// Считаем общее количество и сумму
 const totalItems = computed(() =>
     Object.values(cart.value).reduce((a, b) => a + b, 0),
 );
@@ -202,13 +194,13 @@ const totalPrice = computed(() => {
     }, 0);
 });
 
-// Имитация оформления заказа
 const isCheckingOut = ref(false);
-const handleCheckout = () => {
+const handleCheckout = async () => {
     isCheckingOut.value = true;
 
     const orderData = {
-        app: "cyber_cafe_demo",
+        app: "cafe_demo",
+        userId: user.value.id,
         customer: user.value.username || user.value.first_name,
         items: Object.entries(cart.value).map(([id, qty]) => {
             const p = products.value.find((prod) => prod.id === Number(id));
@@ -217,10 +209,8 @@ const handleCheckout = () => {
         total: totalPrice.value,
     };
 
-    // Небольшая задержка для солидности (показать спиннер) и отправка в ТГ
-    setTimeout(() => {
-        sendOrderToBot(orderData);
-    }, 1000);
+    await sendOrderToBot(orderData);
+    isCheckingOut.value = false;
 };
 </script>
 
@@ -232,5 +222,8 @@ const handleCheckout = () => {
 .slide-up-enter-from,
 .slide-up-leave-to {
     transform: translateY(100%);
+}
+button {
+    touch-action: manipulation;
 }
 </style>
