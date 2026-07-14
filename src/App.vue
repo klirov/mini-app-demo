@@ -246,6 +246,7 @@ button {
 
 .no-scrollbar::-webkit-scrollbar {
     display: none;
+    overflow: hidden;
 }
 .no-scrollbar {
     -ms-overflow-style: none;
