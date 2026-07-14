@@ -220,14 +220,7 @@ const handleCheckout = async () => {
         total: totalPrice.value,
     };
 
-    try {
-        sendOrderToBot(orderData);
-        window.Telegram.WebApp.close();
-    } catch (e) {
-        console.error("Ошибка при отправке заказа:", e);
-        if (mainButton) mainButton.hideProgress();
-        alert("Что-то пошло не так, попробуй еще раз");
-    }
+    sendOrderToBot(orderData);
 };
 
 onMounted(() => {
