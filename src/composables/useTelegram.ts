@@ -73,7 +73,6 @@ export function useTelegram() {
 
                 if (response.ok) {
                     triggerHaptic("success");
-                    tg.close();
                 } else {
                     triggerHaptic("error");
                     tg.showAlert("Ошибка сервера при создании заказа");

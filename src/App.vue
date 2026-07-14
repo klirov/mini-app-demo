@@ -221,7 +221,7 @@ const handleCheckout = async () => {
     };
 
     try {
-        await sendOrderToBot(orderData);
+        sendOrderToBot(orderData);
         window.Telegram.WebApp.close();
     } catch (e) {
         console.error("Ошибка при отправке заказа:", e);
