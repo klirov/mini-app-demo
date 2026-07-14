@@ -201,16 +201,13 @@ const handleCheckout = async () => {
     triggerHaptic("medium");
 
     const isConfirmed = await showConfirmPopup(
-        "Подтверждаете заказ?",
-        "Заказать"
+        "Сейчас мы отправим заказ в чат. Это демо-режим, вам не придется ничего оплачивать по-настоящему. Отправляем?",
+        "Отправить в чат"
     );
 
     if (!isConfirmed) return;
 
-    if (mainButton) {
-        mainButton.showProgress();
-        mainButton.disable();
-    }
+    if (mainButton) mainButton.showProgress();
 
     const orderData = {
         app: "cafe_demo",
@@ -223,14 +220,9 @@ const handleCheckout = async () => {
         total: totalPrice.value,
     };
 
-    const success = await sendOrderToBot(orderData);
+    await sendOrderToBot(orderData);
 
-    if (success && window.Telegram?.WebApp) {
-        window.Telegram.WebApp.close();
-    } else if (mainButton) {
-        mainButton.hideProgress();
-        mainButton.enable();
-    }
+    if (mainButton) mainButton.hideProgress();
 };
 
 onMounted(() => {
@@ -254,7 +246,6 @@ button {
 
 .no-scrollbar::-webkit-scrollbar {
     display: none;
-    overflow: hidden;
 }
 .no-scrollbar {
     -ms-overflow-style: none;

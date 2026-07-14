@@ -59,29 +59,32 @@ export function useTelegram() {
         });
     };
 
-    // useTelegram.ts
     const sendOrderToBot = async (data: any) => {
         if (tg) {
             try {
-                const response = await fetch("https://telegram-bot-seven-ecru.vercel.app/api/order", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                });
+                const response = await fetch(
+                    "https://telegram-bot-seven-ecru.vercel.app/api/order",
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data),
+                    },
+                );
 
-                if (!response.ok) throw new Error("Server error");
-
-                triggerHaptic("success");
-                return true;
+                if (response.ok) {
+                    triggerHaptic("success");
+                    tg.close();
+                } else {
+                    triggerHaptic("error");
+                    tg.showAlert("Ошибка сервера при создании заказа");
+                }
             } catch (error) {
                 console.error(error);
                 triggerHaptic("error");
-                tg.showAlert("Сбой сети. Не удалось оформить заказ.");
-                return false;
+                tg.showAlert("Сбой сети. Не удалось связаться с сервером.");
             }
         } else {
-            alert("Вне ТГ: " + JSON.stringify(data));
-            return true;
+            alert("Вне ТГ (Имитация API-запроса): " + JSON.stringify(data));
         }
     };
 
