@@ -59,25 +59,29 @@ export function useTelegram() {
         });
     };
 
+    // useTelegram.ts
     const sendOrderToBot = async (data: any) => {
         if (tg) {
             try {
-                tg.close();
-                triggerHaptic("success");
-
-                fetch("https://telegram-bot-seven-ecru.vercel.app/api/order", {
+                const response = await fetch("https://telegram-bot-seven-ecru.vercel.app/api/order", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
-                }).catch(console.error);
+                });
 
+                if (!response.ok) throw new Error("Server error");
+
+                triggerHaptic("success");
+                return true;
             } catch (error) {
                 console.error(error);
                 triggerHaptic("error");
-                tg.showAlert("Сбой сети. Не удалось связаться с сервером.");
+                tg.showAlert("Сбой сети. Не удалось оформить заказ.");
+                return false;
             }
         } else {
-            alert("Вне ТГ (Имитация API-запроса): " + JSON.stringify(data));
+            alert("Вне ТГ: " + JSON.stringify(data));
+            return true;
         }
     };
 

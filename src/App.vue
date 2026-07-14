@@ -207,7 +207,10 @@ const handleCheckout = async () => {
 
     if (!isConfirmed) return;
 
-    if (mainButton) mainButton.showProgress();
+    if (mainButton) {
+        mainButton.showProgress();
+        mainButton.disable();
+    }
 
     const orderData = {
         app: "cafe_demo",
@@ -220,7 +223,14 @@ const handleCheckout = async () => {
         total: totalPrice.value,
     };
 
-    sendOrderToBot(orderData);
+    const success = await sendOrderToBot(orderData);
+
+    if (success && window.Telegram?.WebApp) {
+        window.Telegram.WebApp.close();
+    } else if (mainButton) {
+        mainButton.hideProgress();
+        mainButton.enable();
+    }
 };
 
 onMounted(() => {
