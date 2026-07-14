@@ -62,21 +62,15 @@ export function useTelegram() {
     const sendOrderToBot = async (data: any) => {
         if (tg) {
             try {
-                const response = await fetch(
-                    "https://telegram-bot-seven-ecru.vercel.app/api/order",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data),
-                    },
-                );
+                tg.close();
+                triggerHaptic("success");
 
-                if (response.ok) {
-                    triggerHaptic("success");
-                } else {
-                    triggerHaptic("error");
-                    tg.showAlert("Ошибка сервера при создании заказа");
-                }
+                fetch("https://telegram-bot-seven-ecru.vercel.app/api/order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                }).catch(console.error);
+
             } catch (error) {
                 console.error(error);
                 triggerHaptic("error");
