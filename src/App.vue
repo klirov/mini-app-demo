@@ -201,8 +201,8 @@ const handleCheckout = async () => {
     triggerHaptic("medium");
 
     const isConfirmed = await showConfirmPopup(
-        "Сейчас мы отправим заказ в чат. Это демо-режим, вам не придется ничего оплачивать по-настоящему. Отправляем?",
-        "Отправить в чат"
+        "Подтверждаете заказ?",
+        "Заказать"
     );
 
     if (!isConfirmed) return;
@@ -220,9 +220,14 @@ const handleCheckout = async () => {
         total: totalPrice.value,
     };
 
-    await sendOrderToBot(orderData);
-
-    if (mainButton) mainButton.hideProgress();
+    try {
+        await sendOrderToBot(orderData);
+        window.Telegram.WebApp.close();
+    } catch (e) {
+        console.error("Ошибка при отправке заказа:", e);
+        if (mainButton) mainButton.hideProgress();
+        alert("Что-то пошло не так, попробуй еще раз");
+    }
 };
 
 onMounted(() => {
